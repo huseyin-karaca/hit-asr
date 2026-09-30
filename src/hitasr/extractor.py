@@ -529,6 +529,9 @@ class ASRFrameExtractor(ABC):
             raise ValueError(f"{self.name} has no labels on {self.spec.name} to adopt")
         adopted_from = self.adoption_source()[0] if decode != "full" else None
         out_dir = Path(out_dir or self.frames_root / self.spec.frames_config(self.name))
+        # a fresh store: the folder may hold frames fetched for level 2, hard-linked to the download cache, and
+        # writing a shard over such a link would change the cached copy too
+        shutil.rmtree(out_dir, ignore_errors=True)
         print(f"{self.name} on {self.spec.name}: layer {layer}, decode={decode}"
               f"{f' (labels from {adopted_from})' if adopted_from else ''}, -> {out_dir}")
 
@@ -696,8 +699,8 @@ class ASRFrameExtractor(ABC):
 
 
 def rebuild_plan(corpora):
-    """`{corpus: [expert, ...]}`: every trio expert whose labels and frames are not yet complete in the repo being
-    written (`REPO_ID`)."""
+    """`{corpus: [expert, ...]}`: every trio expert whose labels and frames are not yet complete where the rebuild is
+    written (`REPO_ID`: by default a local folder, see `hitasr.core.rebuild_dir`)."""
     from hitasr.core import use_dataset
     from hitasr.hub import HitHub
     plan = {}
@@ -710,21 +713,67 @@ def rebuild_plan(corpora):
 
 
 def compare_with_published(log):
-    """Each rebuilt expert's corpus WER beside the published extraction record's (`results/<corpus>/extract_<expert>
-    .json`): the same checkpoint, decoder and normaliser agree up to the GPU's numerics, to about the third decimal."""
-    import json
+    """Each rebuilt expert beside the published one: the share of utterances whose normalised transcript is identical,
+    the share whose word-error count differs, and the corpus WER of both (the rebuild read from `REPO_ID`, the
+    published labels from `PUBLIC_REPO`). The same checkpoint, decoder and normaliser agree up to the GPU's numerics:
+    a few transcripts flip, the corpus WER moves in about the third decimal."""
+    from hitasr.core import PUBLIC_REPO, use_dataset
 
-    from huggingface_hub import hf_hub_download
-
-    from hitasr.core import PUBLIC_REPO
-
-    def published(corpus, expert):
-        rec = json.loads(Path(hf_hub_download(PUBLIC_REPO, f"results/{corpus}/extract_{expert}.json",
-                                              repo_type="dataset")).read_text())
-        return sum(r["errors_norm"] for r in rec["corpus_wer"]) / sum(r["ref_words_norm"] for r in rec["corpus_wer"])
-
-    check = log[log["status"] == "ok"][["corpus", "expert", "wer"]].rename(columns={"wer": "wer_rebuilt"})
-    check["wer_published"] = [published(c, e) for c, e in zip(check["corpus"], check["expert"])]
-    check["difference"] = check["wer_rebuilt"] - check["wer_published"]
+    rows = []
+    for corpus, expert in log.loc[log["status"] == "ok", ["corpus", "expert"]].itertuples(index=False):
+        spec = use_dataset(corpus, verbose=False)
+        cols = ["id", "transcription_norm", "sub", "dele", "ins", "nref"]
+        cfg = spec.labels_config(expert)
+        got = {}
+        for name, hub in (("rebuilt", HitHub(spec=spec)), ("published", HitHub(PUBLIC_REPO, spec=spec))):
+            got[name] = pd.concat([hub.read_columns(cfg, s, cols).to_pandas().assign(split=s) for s in spec.splits],
+                                  ignore_index=True).set_index(["split", "id"])
+        a, b = got["rebuilt"], got["published"].reindex(got["rebuilt"].index)
+        if b["nref"].isna().any() or len(a) != len(got["published"]):
+            raise ValueError(f"{corpus}/{expert}: the rebuilt utterances are not the published ones")
+        err_a, err_b = a[["sub", "dele", "ins"]].sum(axis=1), b[["sub", "dele", "ins"]].sum(axis=1)
+        rows.append({"corpus": corpus, "expert": expert, "utterances": len(a),
+                     "identical_transcripts": float((a["transcription_norm"] == b["transcription_norm"]).mean()),
+                     "error_count_differs": float((err_a != err_b).mean()),
+                     "wer_rebuilt": float(err_a.sum() / a["nref"].sum()),
+                     "wer_published": float(err_b.sum() / b["nref"].sum())})
+    check = pd.DataFrame(rows)
+    if len(check):
+        check["difference"] = check["wer_rebuilt"] - check["wer_published"]
     return check.round(4)
 
+
+def main(argv=None):
+    """`python -m hitasr.extractor <corpus> [<corpus> ...] [--push-to REPO]`: `notebooks/extract` as a script — the
+    trios' labels and frames into the local rebuild folder (`hitasr.core.rebuild_dir()`), then the comparison with the
+    published labels printed; `--push-to` also uploads the folder to a dataset repository of yours."""
+    import argparse
+
+    from hitasr.configs import MAIN, REBUILD
+    from hitasr.core import rebuild_dir, use_hub
+    from hitasr.models.registry import load_expert_classes
+    from labkit.env import describe_env, login_hf
+    ap = argparse.ArgumentParser(description=main.__doc__.split(":")[0])
+    ap.add_argument("corpora", nargs="+", choices=sorted(MAIN))
+    ap.add_argument("--push-to", default="")
+    a = ap.parse_args(argv)
+    out = rebuild_dir()
+    use_hub(f"local:{out}", records=f"local:{out}")
+    login_hf(required=any(m in REBUILD.gated for c in a.corpora for m in MAIN[c].members))
+    describe_env()
+    print(f"writing to {out}")
+    log = sweep(rebuild_plan(a.corpora), load_expert_classes(), REBUILD.batch, min_batch=REBUILD.min_batch,
+                decode="full")
+    print(log.to_string(index=False))
+    if (log["status"] != "ok").any():
+        raise SystemExit("some experts failed: see the log above")
+    print(compare_with_published(log).to_string(index=False))
+    if a.push_to:
+        from huggingface_hub import HfApi
+        login_hf()
+        HfApi().create_repo(a.push_to, repo_type="dataset", private=True, exist_ok=True)
+        HfApi().upload_large_folder(repo_id=a.push_to, repo_type="dataset", folder_path=str(out))
+
+
+if __name__ == "__main__":
+    main()

@@ -6,9 +6,10 @@ Every notebook runs at one of three levels; set `LEVEL` in its first code cell.
 |---|---|---|---|
 | **1** | every table | the searches, folds and records stored on the Hub, the experts' labels | a CPU, minutes |
 | **2** | every model retrained; in the main notebooks `RETUNE = True` runs the hyperparameter search again too | the experts' labels and frames | a GPU, hours |
-| **3** | level 2, on labels and frames you rebuilt from the audio | your own Hub repository (`extract`) | a GPU, a Hub account |
+| **3** | level 2, on labels and frames you rebuilt from the audio | the local folder `extract` wrote, on the same machine | a GPU, a read token |
 
-Levels 1 and 2 read only public repositories and need no account and no token.
+Levels 1 and 2 read only public repositories and need no account and no token. Level 3 writes nothing anywhere but
+the machine it runs on; its one token is a free read token, because Cohere Transcribe is gated on the Hub.
 
 ## Level 1 — the tables from the stored results
 
@@ -34,14 +35,27 @@ that holds them before the imports.
 
 ## Level 3 — rebuild the experts' outputs
 
-`notebooks/extract` decodes every corpus with each expert of its trio and stores their frame-level encoder states, from
-the audio in the published dataset, into a Hugging Face dataset repository of yours:
+`notebooks/extract` decodes every corpus with each expert of its trio, from the audio in the published dataset, and
+stores their transcripts, word-error counters and frame-level encoder states in a local folder,
+`$HITASR_CACHE/rebuild` (on Colab `/content/hitasr_cache/rebuild`):
 
-1. create an empty dataset repository on the Hub and add a write token as the Colab secret `HF_TOKEN`;
-2. run `extract` with `REBUILD_REPO` set to it — it ends by comparing your WERs with the published ones;
-3. run a main notebook at `LEVEL = 3` with `HITASR_HUB` set to your repository before its imports.
+1. accept the terms of [Cohere Transcribe](https://huggingface.co/CohereLabs/cohere-transcribe-03-2026) on the Hub
+   and add a **read** token as the Colab secret `HF_TOKEN` (the trios of AMI, Earnings-22 and AfriSpeech use it);
+2. run `extract` on a GPU runtime, with `CORPORA` cut to the corpora you want — it ends by comparing your transcripts
+   and WERs with the published ones;
+3. on the same runtime, run a main notebook at `LEVEL = 3`: it reads the labels and frames from that folder and the
+   published searches from the Hub, and retrains every fold.
 
-Cohere Transcribe is gated on the Hub: accept its terms there before step 2.
+A corpus's trio takes 7-18 GB of disk and one to a few GPU hours to extract. To run level 3 on another machine, set
+`PUSH_TO` in `extract` to a dataset repository of yours (this needs a write token) and `HITASR_HUB` to that repository
+before the main notebook's imports; `HITASR_HUB=/some/folder` reads a folder instead.
+
+As scripts:
+
+```bash
+python -m hitasr.extractor earnings22                         # the trio's labels and frames, into $HITASR_CACHE/rebuild
+python -m hitasr.experiment earnings22 --level 3              # level 3 on them
+```
 
 ## Locally
 

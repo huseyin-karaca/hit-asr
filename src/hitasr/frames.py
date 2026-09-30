@@ -185,11 +185,18 @@ class FrameSet:
         from huggingface_hub import snapshot_download
         freed = 0
         cfg = self.spec.frames_config(self.expert)
-        try:
-            snap = snapshot_download(HitHub(spec=self.spec).repo_for(cfg), repo_type="dataset",
-                                     allow_patterns=[f"{cfg}/*", f"{cfg}/**"], local_files_only=True)
-        except Exception:                                      # noqa: BLE001 — nothing cached
+        hub = HitHub(spec=self.spec)
+        if hub.local_root(cfg) is not None:                    # a local repo: its copy stays, only the links go
             snap = None
+            if self.dir.resolve().is_relative_to(hub.local_root(cfg)):
+                self._shards = {}
+                return 0.0
+        else:
+            try:
+                snap = snapshot_download(hub.repo_for(cfg), repo_type="dataset",
+                                         allow_patterns=[f"{cfg}/*", f"{cfg}/**"], local_files_only=True)
+            except Exception:                                  # noqa: BLE001 — nothing cached
+                snap = None
         if snap is not None and (Path(snap) / cfg).exists():
             for p in (Path(snap) / cfg).rglob("*"):
                 if p.is_symlink() or p.is_file():

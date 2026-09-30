@@ -4,11 +4,17 @@ and never mistaken for a missing file, and writes that commit only what changed.
 A `Hub` spans two repos: the data repo, and a records repo that receives every path under `results/` and
 `studies/` (`Hub.RECORD_ROOTS`). They may be the same repo. `set_read_only()` turns every write into an error —
 what a reproduction run uses, so it can never push by accident.
+
+Either repo may instead be a local folder — `local:/path`, or any id that starts with `/`, `./`, `../` or `~` — with
+the same layout, read and written in place: no account, no token, nothing leaves the machine. Files of
+`LINK_MIN_BYTES` and more (frame shards) are hard-linked into it where the filesystem allows, so a store written
+next to it costs no second copy.
 """
 
 __all__ = ['HUB_RETRIES', 'HUB_BACKOFF_S', 'HUB_BACKOFF_MAX_S', 'HUB_WORKERS', 'HUB_ETAG_TIMEOUT', 'TRANSIENT_STATUS',
            'HubUnavailable', 'HubRateLimited', 'HubReadOnly', 'hub_error_kind', 'with_retries', 'content_id',
-           'is_current', 'copy_atomic', 'Fetched', 'Hub', 'set_read_only', 'read_only']
+           'is_current', 'copy_atomic', 'LOCAL_PREFIX', 'LINK_MIN_BYTES', 'LOCAL_LFS_SUFFIXES', 'local_root',
+           'place_atomic', 'Fetched', 'Hub', 'set_read_only', 'read_only']
 
 import hashlib
 import json
@@ -30,6 +36,9 @@ HUB_BACKOFF_MAX_S = 60.0
 HUB_WORKERS = 16             # concurrent downloads in one `fetch`
 HUB_ETAG_TIMEOUT = 30        # seconds for the metadata request of a download (the library's default is 10)
 TRANSIENT_STATUS = (408, 425, 429, 500, 502, 503, 504)
+LOCAL_PREFIX = "local:"      # a repo id with this prefix is a local folder
+LINK_MIN_BYTES = 64 << 20    # files this big are hard-linked into a local repo (frame shards: written once, never changed)
+LOCAL_LFS_SUFFIXES = (".parquet", ".db", ".npy", ".pt")   # listed by sha256 in a local repo, like the Hub's LFS files
 
 
 class HubUnavailable(ConnectionError):
@@ -88,6 +97,8 @@ def hub_error_kind(exc):
         return "transient"
     if names & {"RepositoryNotFoundError", "GatedRepoError", "RevisionNotFoundError"}:
         return "fatal"
+    if isinstance(exc, FileNotFoundError):                     # a local repo's missing file
+        return "missing"
     code = _status_code(exc)
     if code == 404 or (code is None and "EntryNotFoundError" in names):
         return "missing"
@@ -152,12 +163,48 @@ def is_current(local, oid, lfs):
 
 def copy_atomic(src, dst):
     """Copy `src` to `dst` through a hidden temporary next to it, so a half-written file never looks complete."""
+    return place_atomic(src, dst, link=False)
+
+
+def place_atomic(src, dst, link=False):
+    """`copy_atomic`, or with `link` a hard link where `src` and `dst` share a filesystem (a copy otherwise)."""
     dst = Path(dst)
     dst.parent.mkdir(parents=True, exist_ok=True)
     tmp = dst.with_name(f".{dst.name}.{os.getpid()}-{threading.get_ident()}.hubpart")
-    shutil.copyfile(src, tmp)
+    tmp.unlink(missing_ok=True)
+    try:
+        if not link:
+            raise OSError
+        os.link(Path(src).resolve(), tmp)
+    except OSError:
+        shutil.copyfile(src, tmp)
     os.replace(tmp, dst)
     return dst
+
+
+def local_root(repo_id):
+    """The folder a repo id names — `local:<path>`, or a path starting with `/`, `./`, `../` or `~` — else `None`
+    (a Hub repo)."""
+    s = str(repo_id or "")
+    if s.startswith(LOCAL_PREFIX):
+        s = s[len(LOCAL_PREFIX):]
+    elif not s.startswith(("/", "./", "../", "~")):
+        return None
+    return Path(s).expanduser().resolve()
+
+
+def _local_files(root, prefix=""):
+    """Every file under `root/prefix` (partial writes excluded), as repo paths."""
+    folder = root / prefix.strip("/") if prefix.strip("/") else root
+    if not folder.is_dir():
+        return []
+    return sorted(p.relative_to(root).as_posix() for p in folder.rglob("*")
+                  if p.is_file() and not p.name.endswith(".hubpart"))
+
+
+def _local_entry(root, path):
+    lfs = path.endswith(LOCAL_LFS_SUFFIXES)
+    return path, content_id(root / path, lfs), lfs
 
 
 @dataclass
@@ -194,6 +241,10 @@ class Hub:
         self._filesystem = None
         self._revision = None
 
+    def local_root(self, path=""):
+        """The folder behind the repo `path` lives in; `None` when that repo is on the Hub."""
+        return local_root(self.repo_for(path))
+
     def __repr__(self):
         rec = f", records {self.records_repo!r}" if self.records_repo != self.repo_id else ""
         return f"{type(self).__name__}({self.repo_id!r}{rec})"
@@ -216,6 +267,8 @@ class Hub:
         changes the sha, so a stale local cache is invalidated rather than
         served silently. `None` means "could not verify".
         """
+        if local_root(self.repo_id) is not None:
+            return None
         if self._revision is None:
             try:
                 self._revision = self.api.dataset_info(self.repo_id).sha
@@ -231,8 +284,9 @@ class Hub:
         """
         if refresh or self._files is None:
             self._files = [f for repo in self.repos()
-                           for f in with_retries(lambda repo=repo: self.api.list_repo_files(repo, repo_type="dataset"),
-                                                 f"list {repo}")]
+                           for f in (_local_files(local_root(repo)) if local_root(repo) is not None else
+                                     with_retries(lambda repo=repo: self.api.list_repo_files(repo, repo_type="dataset"),
+                                                  f"list {repo}"))]
         return self._files
 
     def local_path(self, path):
@@ -252,6 +306,8 @@ class Hub:
         if len(repos) != 1:
             raise ValueError(f"prefetch patterns span {sorted(repos)}; call once per repo")
         repo = repos.pop()
+        if local_root(repo) is not None:                     # already in place
+            return str(local_root(repo))
         try:
             return with_retries(lambda: snapshot_download(repo, repo_type="dataset",
                                                           allow_patterns=list(patterns), etag_timeout=HUB_ETAG_TIMEOUT),
@@ -272,6 +328,11 @@ class Hub:
         """`[(path, content id, is_lfs)]` of every file under the folder `prefix` — one paged request."""
         from huggingface_hub.hf_api import RepoFile
 
+        root = self.local_root(prefix)
+        if root is not None:
+            if prefix.strip("/") and not (root / prefix.strip("/")).is_dir():
+                raise FileNotFoundError(f"{prefix} is not in {root}")
+            return [_local_entry(root, p) for p in _local_files(root, prefix)]
         out = []
         for e in self.api.list_repo_tree(self.repo_for(prefix), repo_type="dataset", path_in_repo=prefix.rstrip("/") or None,
                                          recursive=True):
@@ -287,6 +348,9 @@ class Hub:
             mine = [p for p in paths if self.repo_for(p) == repo]
             if not mine:
                 continue
+            if local_root(repo) is not None:
+                out += [_local_entry(local_root(repo), p) for p in mine if (local_root(repo) / p).is_file()]
+                continue
             for e in self.api.get_paths_info(repo, mine, repo_type="dataset"):
                 if hasattr(e, "blob_id"):
                     sha = getattr(e.lfs, "sha256", None) or (e.lfs.get("sha256") if isinstance(e.lfs, dict) else None)
@@ -294,7 +358,12 @@ class Hub:
         return out
 
     def _download(self, path):
-        """One file into the `huggingface_hub` cache; its local path."""
+        """One file into the `huggingface_hub` cache; its local path. A local repo's file is read in place."""
+        root = self.local_root(path)
+        if root is not None:
+            if not (root / path).is_file():
+                raise FileNotFoundError(f"{path} is not in {root}")
+            return str(root / path)
         return hf_hub_download(self.repo_for(path), filename=path, repo_type="dataset", etag_timeout=HUB_ETAG_TIMEOUT)
 
     def _commit(self, files, message):
@@ -302,6 +371,11 @@ class Hub:
         from huggingface_hub import CommitOperationAdd
 
         for repo in self.repos():
+            if local_root(repo) is not None:
+                for p, local in files.items():
+                    if self.repo_for(p) == repo:
+                        place_atomic(local, local_root(repo) / p, link=Path(local).stat().st_size >= LINK_MIN_BYTES)
+                continue
             ops = [CommitOperationAdd(path_in_repo=p, path_or_fileobj=str(local)) for p, local in files.items()
                    if self.repo_for(p) == repo]
             if ops:
@@ -440,10 +514,14 @@ class Hub:
         commit carries more than one split's dozen shards.
         """
         self._writable(f"upload {path_in_repo}/")
-        with_retries(lambda: self.api.upload_folder(repo_id=self.repo_for(path_in_repo), repo_type="dataset",
-                                                    folder_path=str(local_dir), path_in_repo=path_in_repo,
-                                                    commit_message=message or f"Update {path_in_repo}/"),
-                     f"upload {path_in_repo}/", commit=True)
+        if self.local_root(path_in_repo) is not None:
+            self._commit({f"{path_in_repo.strip('/')}/{p.relative_to(local_dir).as_posix()}": p
+                          for p in Path(local_dir).rglob("*") if p.is_file()}, message)
+        else:
+            with_retries(lambda: self.api.upload_folder(repo_id=self.repo_for(path_in_repo), repo_type="dataset",
+                                                        folder_path=str(local_dir), path_in_repo=path_in_repo,
+                                                        commit_message=message or f"Update {path_in_repo}/"),
+                         f"upload {path_in_repo}/", commit=True)
         self._files = None
         if verbose:
             n = sum(1 for p in Path(local_dir).rglob("*") if p.is_file())

@@ -3,15 +3,17 @@ on the Hub."""
 
 __all__ = ['PUBLIC_REPO', 'REPO_ID', 'RECORDS_REPO', 'SOURCE_REPO', 'SAMPLING_RATE', 'DATASETS', 'AMI_SDM', 'EARNINGS22',
            'PEOPLES_SPEECH', 'AFRISPEECH', 'DatasetSpec', 'register_dataset', 'use_dataset', 'active_dataset',
-           'require_audio_datasets']
+           'require_audio_datasets', 'rebuild_dir', 'use_hub']
 
 import os
 from dataclasses import dataclass, field
+from pathlib import Path
 
 # The Hub repos. PUBLIC_REPO is the published dataset: the audio bases, every expert's labels and frames. REPO_ID
-# is where labels and frames are read and written — PUBLIC_REPO unless `HITASR_HUB` names your own (a level-3
-# rebuild). RECORDS_REPO holds the records — `results/` (provenance JSON, fold caches) and `studies/` (search
-# ledgers); `labkit.hub.Hub` sends every path under those two folders there.
+# is where labels and frames are read and written — PUBLIC_REPO unless `HITASR_HUB` (or `use_hub`) names another: a
+# local folder (`local:/path`, what `notebooks/extract` writes by default, see `rebuild_dir`) or a dataset repo of
+# yours. RECORDS_REPO holds the records — `results/` (provenance JSON, fold caches) and `studies/` (search ledgers);
+# `labkit.hub.Hub` sends every path under those two folders there.
 PUBLIC_REPO = "huseyin-karaca/hit-asr"
 REPO_ID = os.environ.get("HITASR_HUB", PUBLIC_REPO)
 RECORDS_REPO = os.environ.get("HITASR_RECORDS", PUBLIC_REPO)
@@ -280,3 +282,20 @@ def require_audio_datasets():
             f"datasets {datasets.__version__} cannot decode audio for this project "
             "(4.x moved to torchcodec). Run the Group A/B install cell in this kernel "
             "— it pins `datasets<4.0` — then restart the runtime.")
+
+
+def rebuild_dir():
+    """The local folder `notebooks/extract` writes the rebuilt labels and frames to by default, and level 3 reads:
+    `$HITASR_CACHE/rebuild` (`/content/hitasr_cache/rebuild` on Colab, `~/.cache/hitasr/rebuild` elsewhere)."""
+    return Path(os.environ.get("HITASR_CACHE", Path.home() / ".cache" / "hitasr")) / "rebuild"
+
+
+def use_hub(repo_id, records=None):
+    """Read and write labels and frames in `repo_id` from here on — a local folder (`local:/path`) or a Hugging Face
+    dataset repo; `records` moves `results/` and `studies/` as well. What `HITASR_HUB` / `HITASR_RECORDS` do at import,
+    in a running session. Returns `repo_id`."""
+    global REPO_ID, RECORDS_REPO
+    REPO_ID = str(repo_id)
+    if records is not None:
+        RECORDS_REPO = str(records)
+    return REPO_ID

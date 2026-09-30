@@ -199,6 +199,8 @@ class RebuildConfig:
         "default": 128, "granite_speech_4_1_2b": 32, "qwen3_asr_1_7b": 32, "voxtral_mini_3b": 32,
         "kyutai_stt_2_6b": 32, "cohere_transcribe": 64})
     min_batch: int = 4
+    # gated on the Hub: downloading them needs a (read) token of an account that accepted their terms
+    gated: tuple = ("cohere_transcribe",)
 
 
 ABLATION = AblationConfig()

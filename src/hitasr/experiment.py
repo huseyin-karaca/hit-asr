@@ -12,7 +12,9 @@
 
 **Levels.** 1 reads every search and every fold from the Hub and fits nothing (a missing one stops the run); 2 refits
 every fold from the published labels and frames (`retune=True`: the search as well); 3 is level 2 on labels and frames
-you rebuilt yourself (`notebooks/extract`, then `HITASR_HUB`). Nothing is ever written to the Hub.
+you rebuilt yourself: `notebooks/extract` writes them to a local folder (`hitasr.core.rebuild_dir()`), which level 3
+reads unless `HITASR_HUB` names another place. The searches are read from the published records at every level
+(`retune=True` reruns them). Nothing is ever written to the Hub.
 """
 
 __all__ = ['MainExperiment', 'LABELS', 'table_rows']
@@ -27,7 +29,8 @@ import pandas as pd
 import hitasr.rover  # noqa: F401  (registers the fusion arms)
 from hitasr.arms import MODELS, check_spaces
 from hitasr.configs import ARMS, BASELINE_ARMS, CONTROL_ARMS, SELECTION_ARMS, SPACES
-from hitasr.core import PUBLIC_REPO, REPO_ID, use_dataset
+from hitasr import core
+from hitasr.core import PUBLIC_REPO, rebuild_dir, use_dataset, use_hub
 from hitasr.crossval import (ACC_TOLERANCES, METRICS, cost_table, format_results, results_table,
                              selection_distribution)
 from hitasr.eda import dataset_table
@@ -66,9 +69,12 @@ class MainExperiment:
     def __init__(self, cfg, level=1, retune=False, device="cuda"):
         if level not in (1, 2, 3):
             raise ValueError("level is 1, 2 or 3")
-        if level == 3 and REPO_ID == PUBLIC_REPO:
-            raise RuntimeError("level 3 reads your own extraction: set HITASR_HUB to the repo `extract` wrote, "
-                               "then restart")
+        if level == 3 and core.REPO_ID == PUBLIC_REPO:
+            folder = rebuild_dir()
+            if not folder.is_dir() or not any(folder.iterdir()):
+                raise RuntimeError(f"level 3 reads the labels and frames `notebooks/extract` rebuilt, and {folder} "
+                                   "holds none: run `extract` first (same machine), or set HITASR_HUB to where they are")
+            use_hub(f"local:{folder}")
         self.cfg, self.level, self.retune, self.device = cfg, level, bool(retune), device
         self.spec = use_dataset(cfg.dataset, verbose=False)
         set_determinism(cfg.model_seed)
@@ -86,7 +92,8 @@ class MainExperiment:
         self.tables = {}
         print(f"{cfg.title}: level {level} — search {'refitted' if refit_search else 'read from the Hub'}, "
               f"folds {'refitted' if self.refit_folds else 'read from the Hub'}\n"
-              f"experts  {', '.join(LABELS.get(m, m) for m in cfg.members)}\n"
+              + (f"labels and frames from {core.REPO_ID}\n" if level == 3 else "")
+              + f"experts  {', '.join(LABELS.get(m, m) for m in cfg.members)}\n"
               f"arms     {', '.join(LABELS.get(a, a) for a in ARMS)}")
 
     # ------------------------------------------------------------------ Table 2 --

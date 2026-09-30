@@ -28,7 +28,8 @@ class HitHub(Hub):
     Parameters
     ----------
     repo_id : the data repo. Defaults to the spec's (`REPO_ID`), with the records in `RECORDS_REPO`; an explicit
-        repo — `SOURCE_REPO`, or `.source()`, for fastt's — holds its own records.
+        repo — `SOURCE_REPO`, or `.source()`, for fastt's — holds its own records. Either may be a local folder
+        (`local:/path`, see `labkit.hub`): a rebuild that never leaves the machine.
     spec : the `DatasetSpec` whose naming this instance uses.
     """
 
@@ -100,6 +101,12 @@ class HitHub(Hub):
             raise KeyError(f"no config {config_name!r} in {self.repo_id}; "
                            f"have {self.configs()}")
         wanted = list(splits) if splits else None
+        root = self.local_root(config_name)
+        if root is not None:
+            names = wanted or self.split_names(config_name)
+            ds = load_dataset("parquet", data_files={s: [str(root / p) for p in self.parquet_paths(config_name, s)]
+                                                     for s in names})
+            return DatasetDict({s: ds[s] for s in names})
         ds = None
         if wanted is not None and set(wanted) < set(self.split_names(config_name)):
             try:
@@ -151,6 +158,11 @@ class HitHub(Hub):
         import time
         self._writable(f"push {config_name}")
         message = message or f"Update config {config_name}"
+        if self.local_root(config_name) is not None:
+            self._push_parquet_files(ds, config_name, message)
+            self._configs = self._files = None
+            print(f"wrote config   {config_name}  ({self.local_root(config_name)})")
+            return
         for attempt in range(1, retries + 1):
             try:
                 ds.push_to_hub(self.repo_id, config_name=config_name, commit_message=message)
@@ -173,6 +185,17 @@ class HitHub(Hub):
 
         splits = dict(ds) if isinstance(ds, DatasetDict) else {"train": ds}
         adds = {s: f"{config_name}/{s}-00000-of-00001.parquet" for s in splits}
+        root = self.local_root(config_name)
+        if root is not None:                                   # a local repo: the shards replace the folder's
+            for f in (root / config_name).glob("*.parquet"):
+                if f"{config_name}/{f.name}" not in adds.values():
+                    f.unlink()
+            for split, d in splits.items():
+                tmp = root / f"{adds[split]}.hubpart"
+                tmp.parent.mkdir(parents=True, exist_ok=True)
+                d.to_parquet(tmp)
+                tmp.replace(root / adds[split])
+            return
         ops = [CommitOperationDelete(path_in_repo=f) for f in self.files()
                if f.startswith(f"{config_name}/") and f.endswith(".parquet") and f not in adds.values()]
         with tempfile.TemporaryDirectory() as tmp:
