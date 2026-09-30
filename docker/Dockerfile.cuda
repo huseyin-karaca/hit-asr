@@ -1,0 +1,25 @@
+# Levels 2 and 3 of the reproduction in a container: the package with the experts' stack and a CUDA 12.8 torch, at the
+# library versions of the published reproduction run. Needs an NVIDIA GPU from Turing on, a driver for CUDA 12.8
+# (R570 or newer) and `--gpus all`. Everything it downloads or builds goes to /cache, the records to /out.
+#
+#   docker pull ghcr.io/huseyin-karaca/hit-asr:cuda
+#   docker run --rm --gpus all -v "$PWD/out:/out" -v "$PWD/cache:/cache" ghcr.io/huseyin-karaca/hit-asr:cuda \
+#       python -m hitasr.experiment earnings22 --level 2                                     # level 2
+#   docker run --rm --gpus all -e HF_TOKEN=<a read token> -v "$PWD/out:/out" -v "$PWD/cache:/cache" \
+#       ghcr.io/huseyin-karaca/hit-asr:cuda \
+#       sh -c "python -m hitasr.extractor earnings22 && python -m hitasr.experiment earnings22 --level 3"   # level 3
+FROM python:3.12-slim
+LABEL org.opencontainers.image.source="https://github.com/huseyin-karaca/hit-asr" \
+      org.opencontainers.image.description="HIT-ASR reproducibility package, levels 1-3 (CUDA 12.8)"
+
+ENV PIP_NO_CACHE_DIR=1 PYTHONUNBUFFERED=1 HITASR_CACHE=/cache HF_HOME=/cache/huggingface
+RUN apt-get update && apt-get install -y --no-install-recommends git ffmpeg libsndfile1 && rm -rf /var/lib/apt/lists/*
+RUN python -m pip install torch==2.11.0 torchaudio==2.11.0 --index-url https://download.pytorch.org/whl/cu128
+
+WORKDIR /hit-asr
+COPY . .
+RUN python -m pip install ".[paper,extract]" transformers==5.16.1 datasets==3.6.0 xgboost==3.4.1 optuna==5.0.0 jupyter
+
+VOLUME ["/out", "/cache"]
+WORKDIR /out
+CMD ["python", "-m", "hitasr.experiment", "earnings22", "--level", "2"]

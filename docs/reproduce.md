@@ -74,11 +74,25 @@ python -m hitasr.experiment ami_sdm --level 2                 # on a GPU
 
 ## Docker
 
-`docker/Dockerfile` builds a CPU image with the package and the notebooks; it runs level 1 of a main notebook and
-leaves the record in the mounted folder:
+Two images on the GitHub container registry, built from `docker/` by the repository's `docker` workflow; each holds
+the package and the notebooks, keeps what it downloads in `/cache` and writes the records to `/out`:
+
+| Image | For | Torch |
+|---|---|---|
+| `ghcr.io/huseyin-karaca/hit-asr:cpu` | level 1 | CPU |
+| `ghcr.io/huseyin-karaca/hit-asr:cuda` | levels 2 and 3 (and 1) | CUDA 12.8 — an NVIDIA GPU from Turing on, driver R570 or newer |
 
 ```bash
-docker build -f docker/Dockerfile -t hit-asr .
-docker run --rm -v "$PWD/out:/out" hit-asr                                  # AMI
-docker run --rm -v "$PWD/out:/out" hit-asr python -m hitasr.experiment earnings22 --device cpu
+docker run --rm -v "$PWD/out:/out" ghcr.io/huseyin-karaca/hit-asr:cpu                  # AMI, level 1
+docker run --rm -v "$PWD/out:/out" ghcr.io/huseyin-karaca/hit-asr:cpu python -m hitasr.experiment earnings22 --device cpu
+
+docker run --rm --gpus all -v "$PWD/out:/out" -v "$PWD/cache:/cache" ghcr.io/huseyin-karaca/hit-asr:cuda \
+    python -m hitasr.experiment earnings22 --level 2
+docker run --rm --gpus all -e HF_TOKEN=<a read token> -v "$PWD/out:/out" -v "$PWD/cache:/cache" \
+    ghcr.io/huseyin-karaca/hit-asr:cuda \
+    sh -c "python -m hitasr.extractor earnings22 && python -m hitasr.experiment earnings22 --level 3"
 ```
+
+The CUDA image pins the library versions the reproduction was checked with (torch 2.11.0, transformers 5.16.1,
+datasets 3.6.0, XGBoost 3.4.1, Optuna 5.0.0). `docker build -f docker/Dockerfile.cuda -t hit-asr:cuda .` builds it
+locally.
