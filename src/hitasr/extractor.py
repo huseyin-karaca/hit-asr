@@ -601,7 +601,7 @@ class ASRFrameExtractor(ABC):
         (out_dir / UNPUSHED).touch()
         manifest = write_manifest(out_dir, self.spec, self.name, self.hidden_size,
                                   self.frame_rate_hz, layer, list(labels),
-                                  extra={"model_id": self.model_id, "decode": decode,
+                                  extra={"model_id": self.model_id, "decode": decode, "batch_size": cfg.batch_size,
                                          "adopted_from": adopted_from,
                                          "created_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                                          "n_utts": {s: int(len(v)) for s, v in labels.items()},

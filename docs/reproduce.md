@@ -46,6 +46,8 @@ stores their transcripts, word-error counters and frame-level encoder states in 
 3. on the same runtime, run a main notebook at `LEVEL = 3`: it reads the labels and frames from that folder and the
    published searches from the Hub, and retrains every fold.
 
+The rebuilt frames and transcripts match the published ones for most experts; they differ for Parakeet-TDT's transcripts on AMI, Earnings-22 and People's Speech (taken from an earlier decoding pass) and for Granite-Speech on AMI and People's Speech (batch-dependent) — see [the data page](data.md#how-the-labels-were-made). Level 3 therefore moves the tables of those three corpora more than level 2 does.
+
 A corpus's trio takes 7-18 GB of disk and one to a few GPU hours to extract. To run level 3 on another machine, set
 `PUSH_TO` in `extract` to a dataset repository of yours (this needs a write token) and `HITASR_HUB` to that repository
 before the main notebook's imports; `HITASR_HUB=/some/folder` reads a folder instead.

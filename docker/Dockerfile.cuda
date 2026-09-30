@@ -13,7 +13,9 @@ LABEL org.opencontainers.image.source="https://github.com/huseyin-karaca/hit-asr
       org.opencontainers.image.description="HIT-ASR reproducibility package, levels 1-3 (CUDA 12.8)"
 
 ENV PIP_NO_CACHE_DIR=1 PYTHONUNBUFFERED=1 HITASR_CACHE=/cache HF_HOME=/cache/huggingface
-RUN apt-get update && apt-get install -y --no-install-recommends git ffmpeg libsndfile1 && rm -rf /var/lib/apt/lists/*
+# build-essential: torch.compile (Kyutai's decoder) compiles its kernels with the system C compiler
+RUN apt-get update && apt-get install -y --no-install-recommends git ffmpeg libsndfile1 build-essential \
+    && rm -rf /var/lib/apt/lists/*
 RUN python -m pip install torch==2.11.0 torchaudio==2.11.0 --index-url https://download.pytorch.org/whl/cu128
 
 WORKDIR /hit-asr

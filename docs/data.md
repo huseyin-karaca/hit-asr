@@ -56,3 +56,21 @@ attribution.
 | Earnings-22 | Cohere-Transcribe, Kyutai-STT-2.6b, Parakeet-TDT-0.6b-v3 |
 | People's Speech | Granite-Speech-4.1-2b, Parakeet-CTC-1.1b, Parakeet-TDT-0.6b-v3 |
 | AfriSpeech-200 | Cohere-Transcribe, Qwen3-ASR-1.7B, Voxtral-Mini-3B |
+
+## How the labels were made
+
+Every frame store, and the transcripts of every trio expert but one, come from one full decoding pass of the corpus
+(`decode = full` in `results/<corpus>/extract_<expert>.json`). The exception is Parakeet-TDT-0.6b-v3 on AMI (SDM),
+Earnings-22 and People's Speech: its frames were extracted in that pass, but its transcripts and word-error counters
+were taken from an earlier decoding pass of the same checkpoint (the companion dataset `huseyin-karaca/fastt`, batch size 8), checked by re-decoding 64 utterances per split
+(`decode = verify`, at least 85 % identical after normalisation). `notebooks/extract` decodes every expert in full, so a
+level-3 rebuild reproduces those frames but not every one of those transcripts: on Earnings-22 a full re-decode gives
+the same normalised transcript for 96.2 % of the utterances (corpus WER 0.1390 against the published 0.1392), and the
+tables of a level-3 run move accordingly.
+
+Granite-Speech-4.1-2b (AMI (SDM), People's Speech) was decoded in full, but its tower does not mask the padding
+of a batch and its frame count is estimated from the batch's longest clip, so its frames and transcripts depend on
+how the corpus was batched and on the library versions of the pass, which were not recorded for the published one.
+A rebuild of People's Speech gives the same frame count for 86 % of the utterances (mean frame cosine 0.998) and
+the same normalised transcript for 94.8 % (corpus WER 0.1791 against the published 0.1776). The rebuild's
+extraction records now state their batch size.
