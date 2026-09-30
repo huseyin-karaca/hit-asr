@@ -283,10 +283,14 @@ class Hub:
         that needs one folder uses `listing(prefix)` instead.
         """
         if refresh or self._files is None:
+            # each repo contributes only the paths it serves (`repo_for`): a records repo that also holds data
+            # folders under the same names, or a data repo with records of its own, would otherwise list a path
+            # twice, and a reader of `files()` would read that file twice
             self._files = [f for repo in self.repos()
                            for f in (_local_files(local_root(repo)) if local_root(repo) is not None else
                                      with_retries(lambda repo=repo: self.api.list_repo_files(repo, repo_type="dataset"),
-                                                  f"list {repo}"))]
+                                                  f"list {repo}"))
+                           if self.repo_for(f) == repo]
         return self._files
 
     def local_path(self, path):

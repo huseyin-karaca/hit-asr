@@ -1,6 +1,6 @@
 # Levels 2 and 3 of the reproduction in a container: the package with the experts' stack and a CUDA 12.8 torch, at the
-# library versions of the published reproduction run. Needs an NVIDIA GPU from Turing on, a driver for CUDA 12.8
-# (R570 or newer) and `--gpus all`. Everything it downloads or builds goes to /cache, the records to /out.
+# library versions of the published reproduction run. Needs an NVIDIA GPU from Ampere on (the routers train in
+# bf16), a driver for CUDA 12.8 (R570 or newer) and `--gpus all`. Everything it downloads or builds goes to /cache, the records to /out.
 #
 #   docker pull ghcr.io/huseyin-karaca/hit-asr:cuda
 #   docker run --rm --gpus all -v "$PWD/out:/out" -v "$PWD/cache:/cache" ghcr.io/huseyin-karaca/hit-asr:cuda \

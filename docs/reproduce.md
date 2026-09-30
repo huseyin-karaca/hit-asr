@@ -80,7 +80,7 @@ the package and the notebooks, keeps what it downloads in `/cache` and writes th
 | Image | For | Torch |
 |---|---|---|
 | `ghcr.io/huseyin-karaca/hit-asr:cpu` | level 1 | CPU |
-| `ghcr.io/huseyin-karaca/hit-asr:cuda` | levels 2 and 3 (and 1) | CUDA 12.8 — an NVIDIA GPU from Turing on, driver R570 or newer |
+| `ghcr.io/huseyin-karaca/hit-asr:cuda` | levels 2 and 3 (and 1) | CUDA 12.8 — an NVIDIA GPU from Ampere on (bf16), driver R570 or newer |
 
 ```bash
 docker run --rm -v "$PWD/out:/out" ghcr.io/huseyin-karaca/hit-asr:cpu                  # AMI, level 1
