@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hit-asr"
+dynamic = ["version"]
+description = "HIT-ASR: hierarchical transformer routing over frame-level encoder states of pretrained ASR experts — the reproducibility package"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+authors = [{name = "A. Samil Namli"}, {name = "Huseyin Karaca"}, {name = "Suleyman S. Kozat"}]
+keywords = ["asr", "speech recognition", "routing", "mixture of experts", "model selection", "reproducibility"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+# The packages import only what a step needs; the extras below install a step's stack.
+dependencies = ["numpy", "pandas", "pyarrow", "huggingface_hub>=0.30"]
+
+[project.optional-dependencies]
+# levels 1 and 2 of the main notebooks: the search, the folds, the tests, the tables
+paper = ["scipy", "datasets<4.0", "optuna", "xgboost", "jiwer", "torch"]
+# level 3: the experts, under 🤗 Transformers
+extract = ["transformers>=4.57", "accelerate", "sentencepiece", "torchaudio", "librosa", "soundfile",
+           "mistral-common[audio]", "peft"]
+docs = ["mkdocs-material>=9.5"]
+
+[project.urls]
+Homepage = "https://huseyin-karaca.github.io/hit-asr"
+Repository = "https://github.com/huseyin-karaca/hit-asr"
+Dataset = "https://huggingface.co/datasets/huseyin-karaca/hit-asr"
+
+[tool.setuptools.dynamic]
+version = {attr = "hitasr.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["labkit*", "hitasr*"]

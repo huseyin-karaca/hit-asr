@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.egg-info/
+.ipynb_checkpoints/
+.DS_Store
+site/
+# local mirrors of Hub artefacts and local results — every one of them is re-fetched or re-written on demand
+*.db
+*.parquet
+*.npy
+ledger/
+main_*/
+main_*.json
+hpt_*.json
+notebooks/*.json

@@ -1,0 +1,28 @@
+site_name: HIT-ASR
+site_description: Hierarchical Transformer Routing for Adaptive ASR Expert Selection — the reproducibility package
+site_url: https://huseyin-karaca.github.io/hit-asr/
+repo_url: https://github.com/huseyin-karaca/hit-asr
+repo_name: huseyin-karaca/hit-asr
+copyright: Code Apache-2.0 · data under each corpus's licence
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle: {icon: material/weather-night, name: Dark mode}
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle: {icon: material/weather-sunny, name: Light mode}
+  features: [navigation.sections, content.code.copy]
+nav:
+  - Home: index.md
+  - Reproduce: reproduce.md
+  - The notebooks: notebooks.md
+  - Data and licences: data.md
+  - The package: package.md
+markdown_extensions:
+  - tables
+  - admonition
+  - attr_list
+  - pymdownx.superfences
+  - pymdownx.highlight
