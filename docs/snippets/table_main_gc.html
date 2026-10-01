@@ -1,0 +1,21 @@
+<div class="hit-table" markdown="0">
+<table>
+<thead>
+<tr><th></th><th colspan="2" class="grp">AMI-SDM</th><th colspan="2" class="grp">Earnings-22</th><th colspan="2" class="grp">People&#x27;s Speech</th><th colspan="2" class="grp">AfriSpeech-200</th></tr>
+<tr><th>System</th><th class="num">GC</th><th class="num">Acc</th><th class="num">GC</th><th class="num">Acc</th><th class="num">GC</th><th class="num">Acc</th><th class="num">GC</th><th class="num">Acc</th></tr>
+</thead>
+<tbody>
+<tr><td class="sys">Best single expert</td><td class="num">0.0</td><td class="num">73.6</td><td class="num">0.0</td><td class="num">68.0</td><td class="num">0.0</td><td class="num">67.3</td><td class="num">0.0</td><td class="num">54.3</td></tr>
+<tr><td class="sys">Random</td><td class="num">−44.5</td><td class="num">68.8</td><td class="num">−19.0</td><td class="num">64.2</td><td class="num">−19.7</td><td class="num">59.4</td><td class="num">1.1</td><td class="num">53.2</td></tr>
+<tr class="hit-group"><td class="sys">ROVER (confidence-weighted)</td><td class="num">−23.8</td><td class="num">—</td><td class="num">−21.3</td><td class="num">—</td><td class="num">−16.5</td><td class="num">—</td><td class="num">−65.1</td><td class="num">—</td></tr>
+<tr><td class="sys">CN-MBR</td><td class="num">−82.7</td><td class="num">—</td><td class="num">−33.3</td><td class="num">—</td><td class="num">−36.7</td><td class="num">—</td><td class="num">−71.6</td><td class="num">—</td></tr>
+<tr class="hit-group"><td class="sys">MLP-pool</td><td class="num">14.5</td><td class="num">78.4</td><td class="num">17.4</td><td class="num">73.1</td><td class="num">23.6</td><td class="num">70.5</td><td class="num">24.8</td><td class="num">62.9</td></tr>
+<tr><td class="sys">ADASTT</td><td class="num">2.9</td><td class="num">74.9</td><td class="num">−0.6</td><td class="num">68.9</td><td class="num">13.1</td><td class="num">69.2</td><td class="num">11.8</td><td class="num">61.6</td></tr>
+<tr class="hit-row hit-group"><td class="sys">HIT-ASR</td><td class="num">18.2</td><td class="num">79.7</td><td class="num">21.4</td><td class="num">73.2</td><td class="num">34.0</td><td class="num">71.6</td><td class="num">34.1</td><td class="num">63.4</td></tr>
+<tr class="hit-group"><td class="sys">Oracle</td><td class="num">100.0</td><td class="num">100.0</td><td class="num">100.0</td><td class="num">100.0</td><td class="num">100.0</td><td class="num">100.0</td><td class="num">100.0</td><td class="num">100.0</td></tr>
+<tr><td class="sys">Oracle (1-word tolerance)</td><td class="num">70.4</td><td class="num">84.8</td><td class="num">76.2</td><td class="num">83.8</td><td class="num">82.8</td><td class="num">83.9</td><td class="num">87.5</td><td class="num">83.1</td></tr>
+<tr><td class="sys">Oracle (2-word tolerance)</td><td class="num">48.5</td><td class="num">79.2</td><td class="num">52.9</td><td class="num">75.8</td><td class="num">66.0</td><td class="num">76.1</td><td class="num">67.0</td><td class="num">69.3</td></tr>
+</tbody>
+</table>
+<p class="hit-note">GC: the share of the gap between the best single expert and the per-clip oracle that a system closes. Acc: the share of clips on which it picks a best expert. Both in %; the fusion methods write a new transcript and have no Acc.</p>
+</div>

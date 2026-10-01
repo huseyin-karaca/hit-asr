@@ -1,0 +1,45 @@
+{#-
+  The home page: the hero (status, title, authors, summary, links and the figure), then the content of index.md in a
+  single reading column. The figure is overrides/partials/hero_figure.html, which tools/site_figures.py writes.
+
+  TODO (after acceptance): replace the status line with the journal reference, add the DOI to the links and to the
+  citation in index.md, and add IEEE's copyright notice under the citation ("© 20XX IEEE. Personal use of this
+  material is permitted. Permission from IEEE must be obtained for all other uses, ..."), as IEEE's author posting
+  policy asks.
+-#}
+{% extends "main.html" %}
+
+{% block tabs %}
+  {{ super() }}
+  <section class="hit-hero">
+    <div class="md-grid hit-hero__grid">
+      <div class="hit-hero__text">
+        <p class="hit-hero__status">Under review at IEEE Transactions on Audio, Speech and Language Processing</p>
+        <h1>HIT-ASR</h1>
+        <p class="hit-hero__subtitle">Hierarchical Transformer Routing for Adaptive ASR Expert Selection</p>
+        <p class="hit-hero__authors">Huseyin Karaca, A. Samil Namli, Suleyman S. Kozat</p>
+        <p class="hit-hero__affil">Bilkent University</p>
+        <p class="hit-hero__tldr">
+          Pretrained speech recognizers fail on different clips. HIT-ASR reads the frame-level encoder states of every
+          expert, picks one expert for each clip and runs only that expert's decoder; on four English corpora its
+          word error rate is lower than that of every baseline we compare.
+        </p>
+        <div class="hit-hero__actions">
+          <a class="hit-btn" href="{{ config.repo_url }}">Code</a>
+          <a class="hit-btn" href="https://huggingface.co/datasets/huseyin-karaca/hit-asr">Data</a>
+          <a class="hit-btn hit-btn--primary" href="{{ 'reproduce/' | url }}">Reproduce</a>
+          <a class="hit-btn" href="#citation">Cite</a>
+        </div>
+      </div>
+      {% include "partials/hero_figure.html" %}
+    </div>
+  </section>
+{% endblock %}
+
+{% block container %}
+  <div class="md-content hit-home" data-md-component="content">
+    <article class="md-content__inner md-typeset">
+      {{ page.content }}
+    </article>
+  </div>
+{% endblock %}

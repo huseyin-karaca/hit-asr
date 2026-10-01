@@ -4,8 +4,11 @@
 
 Huseyin Karaca, A. Samil Namli, Suleyman S. Kozat — Bilkent University
 
-[![Docs](https://img.shields.io/badge/docs-huseyin--karaca.github.io%2Fhit--asr-blue)](https://huseyin-karaca.github.io/hit-asr)
+[![Project page](https://img.shields.io/badge/project%20page-huseyin--karaca.github.io%2Fhit--asr-blue)](https://huseyin-karaca.github.io/hit-asr)
 [![Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20dataset-hit--asr-yellow)](https://huggingface.co/datasets/huseyin-karaca/hit-asr)
+
+**Project page: [huseyin-karaca.github.io/hit-asr](https://huseyin-karaca.github.io/hit-asr)**, with the method, the results
+and the reproducibility report.
 
 Pretrained ASR models have complementary strengths: on any one clip, one of them is usually clearly better than the
 others. HIT-ASR picks that expert per clip. It reads the **frame-level encoder states** of every expert — not a

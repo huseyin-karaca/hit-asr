@@ -1,0 +1,1 @@
+<span class="nw">HIT-ASR</span> has a lower word error rate than every baseline on all four corpora. It closes 18.2 to 34.1 % of the gap between the best single expert and the per-clip oracle; <span class="nw">MLP-pool</span>, the strongest other router, closes less on every corpus.

@@ -1,0 +1,17 @@
+<div class="hit-table" markdown="0">
+<table>
+<thead>
+<tr><th></th><th colspan="2" class="grp">AMI-SDM</th><th colspan="2" class="grp">Earnings-22</th><th colspan="2" class="grp">People&#x27;s Speech</th><th colspan="2" class="grp">AfriSpeech-200</th></tr>
+<tr><th>HIT-ASR against</th><th class="num">ΔWER</th><th class="num">p</th><th class="num">ΔWER</th><th class="num">p</th><th class="num">ΔWER</th><th class="num">p</th><th class="num">ΔWER</th><th class="num">p</th></tr>
+</thead>
+<tbody>
+<tr><td>Best single expert</td><td class="num">+1.23</td><td class="num">0.008</td><td class="num">+0.81</td><td class="num">0.003</td><td class="num">+1.58</td><td class="num">0.001</td><td class="num">+2.89</td><td class="num">0.047</td></tr>
+<tr><td>Random</td><td class="num">+4.23</td><td class="num">&lt;0.001</td><td class="num">+1.53</td><td class="num">0.004</td><td class="num">+2.52</td><td class="num">0.067</td><td class="num">+2.76</td><td class="num">0.012</td></tr>
+<tr><td>ROVER (confidence-weighted)</td><td class="num">+2.83</td><td class="num">&lt;0.001</td><td class="num">+1.62</td><td class="num">&lt;0.001</td><td class="num">+2.35</td><td class="num">&lt;0.001</td><td class="num">+8.23</td><td class="num">0.002</td></tr>
+<tr><td>CN-MBR</td><td class="num">+6.80</td><td class="num">&lt;0.001</td><td class="num">+2.07</td><td class="num">0.003</td><td class="num">+3.32</td><td class="num">0.036</td><td class="num">+8.78</td><td class="num">0.002</td></tr>
+<tr><td>MLP-pool</td><td class="num">+0.25</td><td class="num">0.034</td><td class="num">+0.15</td><td class="num">0.040</td><td class="num">+0.49</td><td class="num">0.033</td><td class="num">+0.78</td><td class="num">0.045</td></tr>
+<tr><td>ADASTT</td><td class="num">+1.03</td><td class="num">0.010</td><td class="num">+0.83</td><td class="num">0.016</td><td class="num">+0.98</td><td class="num">0.008</td><td class="num">+1.91</td><td class="num">0.154</td></tr>
+</tbody>
+</table>
+<p class="hit-note">ΔWER is the system's WER minus HIT-ASR's, in WER points (positive: HIT-ASR is better); p is the paired significance test on the same ten folds.</p>
+</div>

@@ -1,0 +1,26 @@
+<div class="hit-table" markdown="0">
+<table>
+<thead>
+<tr><th>Corpus</th><th>Router</th><th class="num">E1</th><th class="num">E2</th><th class="num">E3</th><th class="num">Acc</th></tr>
+</thead>
+<tbody>
+<tr><td>AMI-SDM</td><td class="sys">MLP-pool</td><td class="num">74.8</td><td class="num">21.0</td><td class="num">4.3</td><td class="num">78.4 ± 0.5</td></tr>
+<tr><td></td><td class="sys">ADASTT</td><td class="num">96.1</td><td class="num">3.8</td><td class="num">0.1</td><td class="num">74.9 ± 0.4</td></tr>
+<tr class="hit-row"><td></td><td class="sys">HIT-ASR</td><td class="num">39.7</td><td class="num">54.1</td><td class="num">6.2</td><td class="num">79.7 ± 0.6</td></tr>
+<tr><td></td><td class="sys">Oracle</td><td class="num">73.6</td><td class="num">20.8</td><td class="num">5.6</td><td class="num">100.0 ± 0.0</td></tr>
+<tr class="hit-group"><td>Earnings-22</td><td class="sys">MLP-pool</td><td class="num">66.7</td><td class="num">18.2</td><td class="num">15.1</td><td class="num">73.1 ± 0.6</td></tr>
+<tr><td></td><td class="sys">ADASTT</td><td class="num">89.8</td><td class="num">2.6</td><td class="num">7.6</td><td class="num">68.9 ± 0.8</td></tr>
+<tr class="hit-row"><td></td><td class="sys">HIT-ASR</td><td class="num">73.5</td><td class="num">12.0</td><td class="num">14.6</td><td class="num">73.2 ± 0.7</td></tr>
+<tr><td></td><td class="sys">Oracle</td><td class="num">64.1</td><td class="num">20.9</td><td class="num">15.0</td><td class="num">100.0 ± 0.0</td></tr>
+<tr class="hit-group"><td>People&#x27;s Speech</td><td class="sys">MLP-pool</td><td class="num">69.8</td><td class="num">15.1</td><td class="num">15.1</td><td class="num">70.5 ± 0.7</td></tr>
+<tr><td></td><td class="sys">ADASTT</td><td class="num">91.7</td><td class="num">6.6</td><td class="num">1.7</td><td class="num">69.2 ± 0.7</td></tr>
+<tr class="hit-row"><td></td><td class="sys">HIT-ASR</td><td class="num">45.5</td><td class="num">22.1</td><td class="num">32.4</td><td class="num">71.6 ± 0.4</td></tr>
+<tr><td></td><td class="sys">Oracle</td><td class="num">67.3</td><td class="num">18.3</td><td class="num">14.3</td><td class="num">100.0 ± 0.0</td></tr>
+<tr class="hit-group"><td>AfriSpeech-200</td><td class="sys">MLP-pool</td><td class="num">63.1</td><td class="num">24.4</td><td class="num">12.6</td><td class="num">62.9 ± 0.6</td></tr>
+<tr><td></td><td class="sys">ADASTT</td><td class="num">87.0</td><td class="num">10.0</td><td class="num">3.0</td><td class="num">61.6 ± 0.5</td></tr>
+<tr class="hit-row"><td></td><td class="sys">HIT-ASR</td><td class="num">52.8</td><td class="num">27.6</td><td class="num">19.6</td><td class="num">63.4 ± 0.9</td></tr>
+<tr><td></td><td class="sys">Oracle</td><td class="num">60.6</td><td class="num">24.9</td><td class="num">14.4</td><td class="num">100.0 ± 0.0</td></tr>
+</tbody>
+</table>
+<p class="hit-note">Share of the test clips sent to each expert (%) and selection accuracy (%, mean ± sd over the folds). E1–E3: AMI-SDM: Cohere-Transcribe / Granite-Speech-4.1-2b / Parakeet-TDT-0.6b-v3; Earnings-22: Cohere-Transcribe / Kyutai-STT-2.6b / Parakeet-TDT-0.6b-v3; People&#x27;s Speech: Granite-Speech-4.1-2b / Parakeet-CTC-1.1b / Parakeet-TDT-0.6b-v3; AfriSpeech-200: Cohere-Transcribe / Qwen3-ASR-1.7B / Voxtral-Mini-3B.</p>
+</div>

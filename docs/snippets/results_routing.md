@@ -1,0 +1,1 @@
+<span class="nw">HIT-ASR</span> has the highest selection accuracy of the three routers on every corpus. ADASTT sends 87.0 to 96.1 % of the clips to one expert; <span class="nw">HIT-ASR</span> uses all three experts of each trio.

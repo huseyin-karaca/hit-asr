@@ -1,0 +1,1 @@
+<span class="nw">HIT-ASR</span> has a lower WER than every baseline on every corpus and closes 18.2 to 34.1 % of the oracle gap. Under a paired significance test on the same folds, its WER is significantly lower (p < 0.05) than that of the best single expert, of <span class="nw">MLP-pool</span> and of both transcript-fusion baselines on all four corpora.

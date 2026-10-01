@@ -1,0 +1,1 @@
+At every pool size <span class="nw">HIT-ASR</span> picks a best expert for every test clip (selection accuracy 100.0 %), so its WER equals the oracle's. <span class="nw">MLP-pool</span>, which sees the same frames averaged over time, closes 29.0 to 37.9 % of the gap.

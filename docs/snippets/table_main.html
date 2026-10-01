@@ -1,0 +1,20 @@
+<div class="hit-table" markdown="0">
+<table>
+<thead>
+<tr><th>System</th><th class="num">AMI-SDM</th><th class="num">Earnings-22</th><th class="num">People&#x27;s Speech</th><th class="num">AfriSpeech-200</th></tr>
+</thead>
+<tbody>
+<tr><td class="sys">Best single expert</td><td class="num">18.42 ± 0.22</td><td class="num">12.79 ± 0.24</td><td class="num">17.39 ± 0.26</td><td class="num">25.82 ± 1.03</td></tr>
+<tr><td class="sys">Random</td><td class="num">21.42 ± 0.48</td><td class="num">13.51 ± 0.32</td><td class="num">18.32 ± 0.89</td><td class="num">25.69 ± 0.94</td></tr>
+<tr class="hit-group"><td class="sys">ROVER (confidence-weighted)</td><td class="num">20.03 ± 0.37</td><td class="num">13.60 ± 0.36</td><td class="num">18.15 ± 0.23</td><td class="num">31.17 ± 1.27</td></tr>
+<tr><td class="sys">CN-MBR</td><td class="num">23.99 ± 0.44</td><td class="num">14.06 ± 0.40</td><td class="num">19.12 ± 1.17</td><td class="num">31.71 ± 1.36</td></tr>
+<tr class="hit-group"><td class="sys">MLP-pool</td><td class="num">17.44 ± 0.21</td><td class="num">12.14 ± 0.36</td><td class="num">16.29 ± 0.32</td><td class="num">23.71 ± 0.79</td></tr>
+<tr><td class="sys">ADASTT</td><td class="num">18.23 ± 0.22</td><td class="num">12.82 ± 0.33</td><td class="num">16.78 ± 0.23</td><td class="num">24.84 ± 1.36</td></tr>
+<tr class="hit-row hit-group"><td class="sys">HIT-ASR</td><td class="num best">17.19 ± 0.30</td><td class="num best">11.98 ± 0.27</td><td class="num best">15.80 ± 0.19</td><td class="num best">22.93 ± 0.59</td></tr>
+<tr class="hit-group"><td class="sys">Oracle</td><td class="num">11.68 ± 0.13</td><td class="num">9.00 ± 0.18</td><td class="num">12.74 ± 0.13</td><td class="num">17.51 ± 0.38</td></tr>
+<tr><td class="sys">Oracle (1-word tolerance)</td><td class="num">13.67 ± 0.15</td><td class="num">9.90 ± 0.18</td><td class="num">13.54 ± 0.13</td><td class="num">18.54 ± 0.36</td></tr>
+<tr><td class="sys">Oracle (2-word tolerance)</td><td class="num">15.15 ± 0.15</td><td class="num">10.78 ± 0.20</td><td class="num">14.31 ± 0.13</td><td class="num">20.21 ± 0.38</td></tr>
+</tbody>
+</table>
+<p class="hit-note">Test WER in %, mean ± standard deviation over the ten folds; the lowest of each corpus in bold. The tolerant oracles keep the best single expert unless another expert saves more than one or two words.</p>
+</div>

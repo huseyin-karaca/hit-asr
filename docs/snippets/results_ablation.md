@@ -1,0 +1,1 @@
+The training objective matters most. Trained on the expected-WER term alone, 86 % of the configurations stay on the best single expert; with soft cross-entropy targets alone, 7 % do, and with WER plus hard cross-entropy, 8 %.

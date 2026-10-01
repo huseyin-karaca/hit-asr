@@ -1,0 +1,1 @@
+Against decoding every expert, <span class="nw">HIT-ASR</span> saves 40 to 90 % of the time per clip. Against the best single expert alone its time ranges from 0.11 to 2.52 times that expert's, depending on the corpus.
