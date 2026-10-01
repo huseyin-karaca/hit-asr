@@ -17,6 +17,7 @@ theme:
 nav:
   - Home: index.md
   - Reproduce: reproduce.md
+  - Reproducibility report: reproducibility.md
   - The notebooks: notebooks.md
   - Data and licences: data.md
   - The package: package.md

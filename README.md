@@ -50,6 +50,25 @@ pip install "hit-asr[paper] @ git+https://github.com/huseyin-karaca/hit-asr"
 python -m hitasr.experiment ami_sdm --device cpu      # level 1 of main_ami_sdm as a script
 ```
 
+## Reproducibility, tested
+
+We re-ran this package from scratch, as a reader would: the public code, the public dataset, a read-only token, on
+Google Colab and on rented cloud GPUs (vast.ai) with our Docker images.
+
+- **Level 1** reproduces every table of the paper **exactly**, on all four corpora — from a fresh download on a
+  laptop or in the `ghcr.io/huseyin-karaca/hit-asr:cpu` container.
+- **Level 2** retrains every model: every baseline comes back **identical to the last digit**; HIT-ASR varies run to run
+  as GPU-trained transformers do, and matched the published corpus WER to the fifth decimal on Earnings-22 and
+  People's Speech.
+- **Level 3** rebuilds the experts' outputs from the raw audio: frame-level encoder states with cosine similarity
+  1.000000, identical transcripts for five of the seven experts, every expert's corpus WER within 0.0015.
+- **Cost:** level 1 runs on any CPU in minutes; level 2 takes 35–80 minutes per corpus on Colab's G4 (5–11 compute
+  units); the `ghcr.io/huseyin-karaca/hit-asr:cuda` image runs Earnings-22 on a rented 24 GB card (RTX 3090 / A5000)
+  for about US$0.45 at level 2 and US$1 at level 3.
+
+The [reproducibility report](https://huseyin-karaca.github.io/hit-asr/reproducibility/) has the measurements, the
+time and cost per corpus and level, and the minimum hardware.
+
 ## What is where
 
 ```
