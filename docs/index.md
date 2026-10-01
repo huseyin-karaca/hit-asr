@@ -2,7 +2,7 @@
 
 **Hierarchical Transformer Routing for Adaptive ASR Expert Selection**
 
-A. Samil Namli\*, Huseyin Karaca\*, Suleyman S. Kozat — Bilkent University (\* equal contribution)
+Huseyin Karaca, A. Samil Namli, Suleyman S. Kozat — Bilkent University
 
 [Code](https://github.com/huseyin-karaca/hit-asr){ .md-button } [Data](https://huggingface.co/datasets/huseyin-karaca/hit-asr){ .md-button } [Reproduce](reproduce.md){ .md-button .md-button--primary } [Reproducibility report](reproducibility.md){ .md-button }
 
@@ -29,9 +29,9 @@ expert encoders run once per clip; only the chosen expert's decoder runs.
 ## Citation
 
 ```bibtex
-@article{namli2026hitasr,
+@article{karaca2026hitasr,
   title  = {{HIT-ASR}: Hierarchical Transformer Routing for Adaptive {ASR} Expert Selection},
-  author = {Namli, A. Samil and Karaca, Huseyin and Kozat, Suleyman S.},
+  author = {Karaca, Huseyin and Namli, A. Samil and Kozat, Suleyman S.},
   year   = {2026}
 }
 ```

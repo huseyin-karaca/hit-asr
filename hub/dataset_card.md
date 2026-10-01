@@ -18,8 +18,8 @@ tags:
 
 # HIT-ASR — data and results
 
-The data behind **HIT-ASR: Hierarchical Transformer Routing for Adaptive ASR Expert Selection** (A. Samil Namli,
-Huseyin Karaca, Suleyman S. Kozat — Bilkent University): what the pretrained ASR experts of the paper produce on its
+The data behind **HIT-ASR: Hierarchical Transformer Routing for Adaptive ASR Expert Selection** (Huseyin Karaca,
+A. Samil Namli, Suleyman S. Kozat — Bilkent University): what the pretrained ASR experts of the paper produce on its
 four English corpora, and the stored results every notebook of the code repository reads.
 
 - **Code and notebooks:** [github.com/huseyin-karaca/hit-asr](https://github.com/huseyin-karaca/hit-asr)
@@ -103,9 +103,9 @@ extraction records now state their batch size.
 ## Citation
 
 ```bibtex
-@article{namli2026hitasr,
+@article{karaca2026hitasr,
   title  = {{HIT-ASR}: Hierarchical Transformer Routing for Adaptive {ASR} Expert Selection},
-  author = {Namli, A. Samil and Karaca, Huseyin and Kozat, Suleyman S.},
+  author = {Karaca, Huseyin and Namli, A. Samil and Kozat, Suleyman S.},
   year   = {2026}
 }
 ```

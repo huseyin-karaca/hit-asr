@@ -2,7 +2,7 @@
 
 **Hierarchical Transformer Routing for Adaptive ASR Expert Selection** — the reproducibility package.
 
-A. Samil Namli\*, Huseyin Karaca\*, Suleyman S. Kozat — Bilkent University (\* equal contribution)
+Huseyin Karaca, A. Samil Namli, Suleyman S. Kozat — Bilkent University
 
 [![Docs](https://img.shields.io/badge/docs-huseyin--karaca.github.io%2Fhit--asr-blue)](https://huseyin-karaca.github.io/hit-asr)
 [![Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20dataset-hit--asr-yellow)](https://huggingface.co/datasets/huseyin-karaca/hit-asr)

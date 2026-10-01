@@ -9,7 +9,7 @@ description = "HIT-ASR: hierarchical transformer routing over frame-level encode
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "Apache-2.0"}
-authors = [{name = "A. Samil Namli"}, {name = "Huseyin Karaca"}, {name = "Suleyman S. Kozat"}]
+authors = [{name = "Huseyin Karaca"}, {name = "A. Samil Namli"}, {name = "Suleyman S. Kozat"}]
 keywords = ["asr", "speech recognition", "routing", "mixture of experts", "model selection", "reproducibility"]
 classifiers = [
     "Programming Language :: Python :: 3",

@@ -6,11 +6,11 @@ license: Apache-2.0
 repository-code: "https://github.com/huseyin-karaca/hit-asr"
 url: "https://huseyin-karaca.github.io/hit-asr"
 authors:
-  - family-names: Namli
-    given-names: "A. Samil"
-    affiliation: Bilkent University
   - family-names: Karaca
     given-names: Huseyin
+    affiliation: Bilkent University
+  - family-names: Namli
+    given-names: "A. Samil"
     affiliation: Bilkent University
   - family-names: Kozat
     given-names: "Suleyman S."
@@ -19,10 +19,10 @@ preferred-citation:
   type: article
   title: "HIT-ASR: Hierarchical Transformer Routing for Adaptive ASR Expert Selection"
   authors:
-    - family-names: Namli
-      given-names: "A. Samil"
     - family-names: Karaca
       given-names: Huseyin
+    - family-names: Namli
+      given-names: "A. Samil"
     - family-names: Kozat
       given-names: "Suleyman S."
   year: 2026
