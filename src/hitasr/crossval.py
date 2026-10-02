@@ -13,7 +13,7 @@ import pandas as pd
 
 from hitasr.eda import fold_brief
 from labkit.cv import FiveByTwoSplit, fold_rng
-from labkit.pretty import paint, show_table
+from labkit.pretty import show_table
 
 
 def picked_errors(E, choice):

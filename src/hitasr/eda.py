@@ -3,7 +3,7 @@ __all__ = ['gain_profile', 'selection_accuracy', 'base_model_report', 'eda', 'pa
 import numpy as np
 import pandas as pd
 
-from hitasr.ensemble import (best_single_model, ensemble_stats, error_correlation_matrix,
+from hitasr.ensemble import (ensemble_stats, error_correlation_matrix,
                              pair_diversity_table, win_rates)
 
 

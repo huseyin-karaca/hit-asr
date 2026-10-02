@@ -14,7 +14,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from labkit.hub import Fetched, Hub, HubRateLimited, HubUnavailable
+from labkit.hub import Fetched, HubRateLimited, HubUnavailable
 from labkit.pretty import state
 
 

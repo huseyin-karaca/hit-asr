@@ -20,7 +20,6 @@ import hashlib
 import json
 import os
 import random
-import re
 import shutil
 import threading
 import time

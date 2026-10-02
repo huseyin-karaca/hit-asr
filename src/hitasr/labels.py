@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import pyarrow.parquet as pq
 
-from hitasr.core import SOURCE_REPO, active_dataset
+from hitasr.core import active_dataset
 from hitasr.hub import HitHub
 
 ERROR_PARTS = ("sub", "dele", "ins")

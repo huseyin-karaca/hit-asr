@@ -59,7 +59,6 @@ def _frozen_to_row(t, writer):
 
 
 def _row_to_frozen(r):
-    from datetime import datetime
     from optuna.distributions import json_to_distribution
     values = json.loads(r["values"])
     return optuna.trial.create_trial(

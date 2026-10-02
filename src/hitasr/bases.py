@@ -60,7 +60,7 @@ def finalize_base(ds, spec=None, target_sr=None, num_proc=None, normalizer=None)
     keep = scorable(spec, normalizer)
     before = {s: d.num_rows for s, d in ds.items()}
     ds = DatasetDict({s: d.filter(keep, input_columns=["text"]) for s, d in ds.items()})
-    print(f"  kept scorable rows: " + ", ".join(f"{s} {d.num_rows:,}/{before[s]:,}" for s, d in ds.items())
+    print("  kept scorable rows: " + ", ".join(f"{s} {d.num_rows:,}/{before[s]:,}" for s, d in ds.items())
           + (f"  (>= {spec.min_ref_words} normalised words)" if spec.min_ref_words else ""))
     for s, d in ds.items():
         ids = d["id"]

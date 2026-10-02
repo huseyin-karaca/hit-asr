@@ -5,7 +5,7 @@ __all__ = ['TrainConfig', 'wer_targets', 'train_router', 'fit_with_restarts', 'p
 
 import math
 import time
-from dataclasses import asdict, dataclass, field, replace
+from dataclasses import dataclass, replace
 
 import numpy as np
 import torch

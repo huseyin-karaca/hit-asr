@@ -7,7 +7,7 @@ import hashlib
 import numpy as np
 import pandas as pd
 
-from hitasr.arms import MODELS, Arm, ModelSpec, register
+from hitasr.arms import Arm, ModelSpec, register
 from labkit.search import Param
 
 WEIGHT_SCHEMES = ("uniform", "inverse_wer", "log_odds")

@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 
 from hitasr.arms import MODELS, check_spaces
-from labkit.search import Param, space_source
+from labkit.search import space_source
 from hitasr.crossval import (CONTEXT_METRICS, METRICS, TABLE_LABELS, TABLE_METRICS, fit_arm, format_shares, run_cv,
                              score_arm, selection_shares)
 from labkit.cv import FiveByTwoSplit, random_partition
@@ -25,7 +25,7 @@ from hitasr.hub import HitHub
 from labkit.runlog import CacheMiss
 from labkit.studies import StudyStore as _StudyStore
 from labkit.studies import _sign, best_trial, completed, sync_ledgers
-from labkit.pretty import HEX, STATES, in_notebook, metric_token, paint, show_table, signed, state
+from labkit.pretty import metric_token, paint, show_table, signed, state
 
 try:
     import optuna
