@@ -9,6 +9,20 @@
 -#}
 {% extends "main.html" %}
 
+{#- Google Scholar reads these Highwire Press tags on the paper's own page
+    (https://scholar.google.com/intl/en/scholar/inclusion.html#indexing). citation_pdf_url is the manuscript PDF on
+    hkaraca.com. After acceptance, add citation_journal_title, citation_volume, citation_firstpage and citation_doi. -#}
+{% block extrahead %}
+  {{ super() }}
+  <meta name="citation_title" content="HIT-ASR: Hierarchical Transformer Routing for Adaptive ASR Expert Selection">
+  <meta name="citation_author" content="Huseyin Karaca">
+  <meta name="citation_author" content="A. Samil Namli">
+  <meta name="citation_author" content="Suleyman S. Kozat">
+  <meta name="citation_publication_date" content="2026">
+  <meta name="citation_pdf_url" content="https://hkaraca.com/papers/hit-asr.pdf">
+  <meta name="citation_abstract_html_url" content="https://hkaraca.com/hit-asr/">
+{% endblock %}
+
 {% block tabs %}
   {{ super() }}
   <section class="hit-hero">
@@ -25,6 +39,7 @@
           word error rate is lower than that of every baseline we compare.
         </p>
         <div class="hit-hero__actions">
+          <a class="hit-btn" href="https://hkaraca.com/papers/hit-asr.pdf">Paper</a>
           <a class="hit-btn" href="{{ config.repo_url }}">Code</a>
           <a class="hit-btn" href="https://huggingface.co/datasets/huseyin-karaca/hit-asr">Data</a>
           <a class="hit-btn hit-btn--primary" href="{{ 'reproduce/' | url }}">Reproduce</a>

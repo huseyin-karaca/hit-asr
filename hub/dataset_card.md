@@ -2,7 +2,7 @@
 pretty_name: HIT-ASR
 license: other
 license_name: per-corpus
-license_link: https://huseyin-karaca.github.io/hit-asr/data/
+license_link: https://hkaraca.com/hit-asr/data/
 language:
 - en
 task_categories:
@@ -23,7 +23,7 @@ A. Samil Namli, Suleyman S. Kozat — Bilkent University): what the pretrained A
 four English corpora, and the stored results every notebook of the code repository reads.
 
 - **Code and notebooks:** [github.com/huseyin-karaca/hit-asr](https://github.com/huseyin-karaca/hit-asr)
-- **Documentation:** [huseyin-karaca.github.io/hit-asr](https://huseyin-karaca.github.io/hit-asr)
+- **Documentation:** [hkaraca.com/hit-asr](https://hkaraca.com/hit-asr/)
 
 ## What is here
 

@@ -4,10 +4,10 @@
 
 Huseyin Karaca, A. Samil Namli, Suleyman S. Kozat — Bilkent University
 
-[![Project page](https://img.shields.io/badge/project%20page-huseyin--karaca.github.io%2Fhit--asr-blue)](https://huseyin-karaca.github.io/hit-asr)
+[![Project page](https://img.shields.io/badge/project%20page-hkaraca.com%2Fhit--asr-blue)](https://hkaraca.com/hit-asr)
 [![Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20dataset-hit--asr-yellow)](https://huggingface.co/datasets/huseyin-karaca/hit-asr)
 
-**Project page: [huseyin-karaca.github.io/hit-asr](https://huseyin-karaca.github.io/hit-asr)**, with the method, the results
+**Project page: [hkaraca.com/hit-asr](https://hkaraca.com/hit-asr/)**, with the method, the results
 and the reproducibility report.
 
 Pretrained ASR models have complementary strengths: on any one clip, one of them is usually clearly better than the
@@ -69,7 +69,7 @@ Google Colab and on rented cloud GPUs (vast.ai) with our Docker images.
   units); the `ghcr.io/huseyin-karaca/hit-asr:cuda` image runs Earnings-22 on a rented 24 GB card (RTX 3090 / A5000)
   for about US$0.45 at level 2 and US$1 at level 3.
 
-The [reproducibility report](https://huseyin-karaca.github.io/hit-asr/reproducibility/) has the measurements, the
+The [reproducibility report](https://hkaraca.com/hit-asr/reproducibility/) has the measurements, the
 time and cost per corpus and level, and the minimum hardware.
 
 ## What is where
@@ -87,7 +87,7 @@ docs/             the documentation site
 The data — the audio at 16 kHz, every expert's transcripts and word-error counters, their frame-level encoder
 states, and the stored searches, folds and records — is the Hugging Face dataset
 [`huseyin-karaca/hit-asr`](https://huggingface.co/datasets/huseyin-karaca/hit-asr). Each corpus's part carries that
-corpus's licence; see the [documentation](https://huseyin-karaca.github.io/hit-asr/data/).
+corpus's licence; see the [documentation](https://hkaraca.com/hit-asr/data/).
 
 ## Citation
 

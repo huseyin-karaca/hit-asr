@@ -28,7 +28,7 @@ extract = ["transformers>=4.57", "accelerate", "sentencepiece", "torchaudio", "l
 docs = ["mkdocs-material>=9.5"]
 
 [project.urls]
-Homepage = "https://huseyin-karaca.github.io/hit-asr"
+Homepage = "https://hkaraca.com/hit-asr/"
 Repository = "https://github.com/huseyin-karaca/hit-asr"
 Dataset = "https://huggingface.co/datasets/huseyin-karaca/hit-asr"
 

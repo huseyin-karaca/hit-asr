@@ -2,7 +2,7 @@ site_name: HIT-ASR
 site_description: >-
   HIT-ASR routes each audio clip to one of several pretrained speech recognizers, reading the frame-level encoder
   states of all of them with a hierarchical transformer and decoding with the chosen expert only.
-site_url: https://huseyin-karaca.github.io/hit-asr/
+site_url: https://hkaraca.com/hit-asr/
 repo_url: https://github.com/huseyin-karaca/hit-asr
 repo_name: huseyin-karaca/hit-asr
 # TODO (after acceptance): add the DOI and IEEE's copyright notice to the citation (docs/index.md, overrides/home.html).
@@ -61,3 +61,8 @@ markdown_extensions:
   - pymdownx.snippets:
       base_path: [docs]
       check_paths: true
+extra:
+  social:
+    - icon: fontawesome/solid/house
+      link: https://hkaraca.com/
+      name: Huseyin Karaca
