@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{#- Tab icons besides theme.favicon (favicon.svg), drawn by bin/make_icons.py in the hkaraca.com repo. -#}
+{% block extrahead %}
+  <link rel="icon" href="{{ 'assets/favicon.ico' | url }}" sizes="32x32">
+  <link rel="apple-touch-icon" href="{{ 'assets/apple-touch-icon.png' | url }}">
+{% endblock %}
