@@ -1,99 +1,85 @@
-# HIT-ASR
+<div align="center">
 
-**Hierarchical Transformer Routing for Adaptive ASR Expert Selection** — the reproducibility package.
+<h1>HIT-ASR: Hierarchical Transformer Routing for Adaptive ASR Expert Selection</h1>
 
-Huseyin Karaca, A. Samil Namli, Suleyman S. Kozat — Bilkent University
+**Under review · IEEE Transactions on Audio, Speech and Language Processing**
 
-[![Project page](https://img.shields.io/badge/project%20page-hkaraca.com%2Fhit--asr-blue)](https://hkaraca.com/hit-asr)
-[![Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20dataset-hit--asr-yellow)](https://huggingface.co/datasets/huseyin-karaca/hit-asr)
+[Huseyin Karaca](https://hkaraca.com/), A. Samil Namli, Suleyman S. Kozat<br>
+Bilkent University
 
-**Project page: [hkaraca.com/hit-asr](https://hkaraca.com/hit-asr/)**, with the method, the results
-and the paper.
+[Paper](https://hkaraca.com/assets/pdf/hit-asr.pdf) ·
+[Project page](https://hkaraca.com/hit-asr/) ·
+[Data](https://huggingface.co/datasets/huseyin-karaca/hit-asr)
 
-Pretrained ASR models have complementary strengths: on any one clip, one of them is usually clearly better than the
-others. HIT-ASR picks that expert per clip. It reads the **frame-level encoder states** of every expert — not a
-pooled summary — with a two-stage transformer: a first stage that models the temporal evidence within each expert,
-and a cross-attention bridge that lets the experts' streams inform one another before one of them is chosen. Only the
-chosen expert's decoder runs.
+</div>
 
-![HIT-ASR: every expert encoder runs once, the router reads their frame-level states, and only the chosen expert's decoder runs](docs/assets/hero-schematic.svg)
+HIT-ASR is a router that picks, for each audio clip, one ASR system from a pool of frozen experts before any of them
+decodes. It reads every expert's frame-level encoder states with a hierarchical transformer and attains the lowest
+WER on all four corpora, 6.3–11.2 % relative below the best single expert. This repository holds the code, the
+notebooks behind every table, and the data on the Hugging Face Hub.
 
-## Reproduce the paper
+<p align="center"><img src="docs/assets/teaser.png" width="800" alt="HIT-ASR routes each clip to one expert"></p>
+<p align="center"><em>The router reads every expert's encoder states, unpooled; only the chosen decoder runs.</em></p>
 
-The main experiment is one notebook per corpus. Every model's hyperparameters are selected on a 25 % hold-out of the
-corpus; every model is then trained and tested on the same ten folds of a 5×2 cross-validation of the remaining clips,
-and HIT-ASR is compared with every other system on those folds.
+## Installation
 
-| Notebook | What it reproduces | |
-|---|---|---|
-| [`main_ami_sdm`](notebooks/main_ami_sdm.ipynb) | Tables 1, 2, 3 and 6 on AMI (single distant microphone) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/huseyin-karaca/hit-asr/blob/main/notebooks/main_ami_sdm.ipynb) |
-| [`main_earnings22`](notebooks/main_earnings22.ipynb) | the same on Earnings-22 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/huseyin-karaca/hit-asr/blob/main/notebooks/main_earnings22.ipynb) |
-| [`main_peoples_speech`](notebooks/main_peoples_speech.ipynb) | the same on People's Speech | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/huseyin-karaca/hit-asr/blob/main/notebooks/main_peoples_speech.ipynb) |
-| [`main_afrispeech`](notebooks/main_afrispeech.ipynb) | the same on AfriSpeech-200 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/huseyin-karaca/hit-asr/blob/main/notebooks/main_afrispeech.ipynb) |
-| [`ablation`](notebooks/ablation.ipynb) | the design switches of HIT-ASR and the number of experts | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/huseyin-karaca/hit-asr/blob/main/notebooks/ablation.ipynb) |
-| [`timing`](notebooks/timing.ipynb) | the cost on raw audio | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/huseyin-karaca/hit-asr/blob/main/notebooks/timing.ipynb) |
-| [`synthetic`](notebooks/synthetic.ipynb) | the synthetic regime-switch check | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/huseyin-karaca/hit-asr/blob/main/notebooks/synthetic.ipynb) |
-| [`manuscript_tables`](notebooks/manuscript_tables.ipynb) | every table of the paper, written to [`tables/`](tables) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/huseyin-karaca/hit-asr/blob/main/notebooks/manuscript_tables.ipynb) |
-| [`extract`](notebooks/extract.ipynb) | the experts' labels and frames, rebuilt from the audio (level 3) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/huseyin-karaca/hit-asr/blob/main/notebooks/extract.ipynb) |
-
-Each notebook runs at one of three levels (`LEVEL` in its first cell):
-
-| Level | What runs | Needs |
-|---|---|---|
-| **1** | every table, from the searches, folds and records stored on the Hub | a CPU, minutes |
-| **2** | every model retrained from the published labels and frames | a GPU, hours |
-| **3** | level 2 on labels and frames rebuilt from the audio (`extract`) | a GPU |
-
-Levels 1 and 2 need no account and no token. The notebooks are committed with the outputs of a level-1 run.
-
-Locally:
+Python ≥ 3.10. A CPU is enough for level 1; levels 2 and 3 use one GPU.
 
 ```bash
 pip install "hit-asr[paper] @ git+https://github.com/huseyin-karaca/hit-asr"
-python -m hitasr.experiment ami_sdm --device cpu      # level 1 of main_ami_sdm as a script
 ```
 
-## Reproducibility, tested
+Docker images: `ghcr.io/huseyin-karaca/hit-asr:cpu` and `ghcr.io/huseyin-karaca/hit-asr:cuda`.
 
-We re-ran this package from scratch, as a reader would: the public code, the public dataset, a read-only token, on
-Google Colab and on rented cloud GPUs (vast.ai) with our Docker images.
+## Quick start
 
-- **Level 1** reproduces every table of the paper **exactly**, on all four corpora — from a fresh download on a
-  laptop or in the `ghcr.io/huseyin-karaca/hit-asr:cpu` container.
-- **Level 2** retrains every model: every baseline comes back **identical to the last digit**; HIT-ASR varies run to run
-  as GPU-trained transformers do, and matched the published corpus WER to the fifth decimal on Earnings-22 and
-  People's Speech.
-- **Level 3** rebuilds the experts' outputs from the raw audio: frame-level encoder states with cosine similarity
-  1.000000, identical transcripts for five of the seven experts, every expert's corpus WER within 0.0015.
-- **Cost:** level 1 runs on any CPU in minutes; level 2 takes 35–80 minutes per corpus on Colab's G4 (5–11 compute
-  units); the `ghcr.io/huseyin-karaca/hit-asr:cuda` image runs Earnings-22 on a rented 24 GB card (RTX 3090 / A5000)
-  for about US$0.45 at level 2 and US$1 at level 3.
+Recompute the AMI-SDM tables from the records on the Hub (a CPU, a few minutes):
 
-The [reproducibility report](notes/reproducibility.md) has the measurements, the time and cost per
-corpus and level, and the minimum hardware.
-
-## What is where
-
-```
-notebooks/        the notebooks
-tables/           the paper's tables as LaTeX, written by notebooks/manuscript_tables
-src/hitasr/       the paper: the configurations (configs), the main experiment (experiment), the routers and every
-                  baseline, the search, the cross-validation, the ablation, the cost measurement, the tables (paper)
-src/labkit/       the experiment machinery: Hub repos as a cache, result caches, search spaces, 5x2 splits, the
-                  paired test, tables
-docs/             the project page: one static index.html and its assets
-notes/            the long-form notes behind it: method, results, reproduction, data, notebooks, package
+```bash
+python -m hitasr.experiment ami_sdm --device cpu    # prints the paper's tables for AMI-SDM
 ```
 
-The data — the audio at 16 kHz, every expert's transcripts and word-error counters, their frame-level encoder
-states, and the stored searches, folds and records — is the Hugging Face dataset
-[`huseyin-karaca/hit-asr`](https://huggingface.co/datasets/huseyin-karaca/hit-asr). Each corpus's part carries that
-corpus's licence; see [`notes/data.md`](notes/data.md).
+Other corpora: `earnings22`, `peoples_speech`, `afrispeech`. Add `--level 2` to retrain every model on a GPU.
+
+## Reproducing the paper
+
+One notebook per experiment. Set `LEVEL` in its first cell:
+**1** every table from the stored runs (CPU, minutes), **2** every model retrained (GPU, 35–80 min per corpus on a
+Colab G4), **3** level 2 on features rebuilt from the audio with [`extract`](notebooks/extract.ipynb).
+
+| Notebook | Reproduces | HIT-ASR WER | |
+|---|---|--:|---|
+| [`main_ami_sdm`](notebooks/main_ami_sdm.ipynb) | Tables 1, 2, 3, 6 on AMI-SDM | 17.19 | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/huseyin-karaca/hit-asr/blob/main/notebooks/main_ami_sdm.ipynb) |
+| [`main_earnings22`](notebooks/main_earnings22.ipynb) | the same on Earnings-22 | 11.98 | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/huseyin-karaca/hit-asr/blob/main/notebooks/main_earnings22.ipynb) |
+| [`main_peoples_speech`](notebooks/main_peoples_speech.ipynb) | the same on People's Speech | 15.80 | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/huseyin-karaca/hit-asr/blob/main/notebooks/main_peoples_speech.ipynb) |
+| [`main_afrispeech`](notebooks/main_afrispeech.ipynb) | the same on AfriSpeech-200 | 22.93 | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/huseyin-karaca/hit-asr/blob/main/notebooks/main_afrispeech.ipynb) |
+| [`ablation`](notebooks/ablation.ipynb) | design switches, number of experts | | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/huseyin-karaca/hit-asr/blob/main/notebooks/ablation.ipynb) |
+| [`timing`](notebooks/timing.ipynb) | cost on raw audio | | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/huseyin-karaca/hit-asr/blob/main/notebooks/timing.ipynb) |
+| [`synthetic`](notebooks/synthetic.ipynb) | synthetic regime-switch check | | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/huseyin-karaca/hit-asr/blob/main/notebooks/synthetic.ipynb) |
+| [`manuscript_tables`](notebooks/manuscript_tables.ipynb) | every LaTeX table, into [`tables/`](tables) | | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/huseyin-karaca/hit-asr/blob/main/notebooks/manuscript_tables.ipynb) |
+
+WER is test WER (%), the mean over the ten folds of a 5×2 cross-validation. Level 1 reproduces every table exactly;
+the [reproducibility report](notes/reproducibility.md) has the test runs, hardware and cost.
+
+## Data
+
+The Hugging Face dataset [`huseyin-karaca/hit-asr`](https://huggingface.co/datasets/huseyin-karaca/hit-asr) holds the
+16 kHz audio, every expert's transcripts and frame-level encoder states, and the stored runs. The notebooks download
+what they need. Each corpus keeps its own licence; see [`notes/data.md`](notes/data.md).
 
 ## Citation
 
-See [`CITATION.cff`](CITATION.cff).
+```bibtex
+@article{karaca2026hitasr,
+  title  = {{HIT-ASR}: Hierarchical Transformer Routing for
+            Adaptive {ASR} Expert Selection},
+  author = {Karaca, Huseyin and Namli, A. Samil and Kozat, Suleyman S.},
+  year   = {2026},
+  note   = {Under review},
+  url    = {https://hkaraca.com/hit-asr/}
+}
+```
 
-## Licence
+## License
 
-The code is Apache-2.0 ([`LICENSE`](LICENSE)). The data on the Hub keeps the licence of the corpus it comes from.
+Code: [Apache-2.0](LICENSE). The data on the Hub keeps the licence of the corpus it comes from.
