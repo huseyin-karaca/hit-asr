@@ -8,7 +8,7 @@ Huseyin Karaca, A. Samil Namli, Suleyman S. Kozat — Bilkent University
 [![Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20dataset-hit--asr-yellow)](https://huggingface.co/datasets/huseyin-karaca/hit-asr)
 
 **Project page: [hkaraca.com/hit-asr](https://hkaraca.com/hit-asr/)**, with the method, the results
-and the reproducibility report.
+and the paper.
 
 Pretrained ASR models have complementary strengths: on any one clip, one of them is usually clearly better than the
 others. HIT-ASR picks that expert per clip. It reads the **frame-level encoder states** of every expert — not a
@@ -16,7 +16,7 @@ pooled summary — with a two-stage transformer: a first stage that models the t
 and a cross-attention bridge that lets the experts' streams inform one another before one of them is chosen. Only the
 chosen expert's decoder runs.
 
-![The HIT-ASR router](docs/assets/router_figure.svg)
+![HIT-ASR: every expert encoder runs once, the router reads their frame-level states, and only the chosen expert's decoder runs](docs/assets/hero-schematic.svg)
 
 ## Reproduce the paper
 
@@ -69,8 +69,8 @@ Google Colab and on rented cloud GPUs (vast.ai) with our Docker images.
   units); the `ghcr.io/huseyin-karaca/hit-asr:cuda` image runs Earnings-22 on a rented 24 GB card (RTX 3090 / A5000)
   for about US$0.45 at level 2 and US$1 at level 3.
 
-The [reproducibility report](https://hkaraca.com/hit-asr/reproducibility/) has the measurements, the
-time and cost per corpus and level, and the minimum hardware.
+The [reproducibility report](notes/reproducibility.md) has the measurements, the time and cost per
+corpus and level, and the minimum hardware.
 
 ## What is where
 
@@ -81,13 +81,14 @@ src/hitasr/       the paper: the configurations (configs), the main experiment (
                   baseline, the search, the cross-validation, the ablation, the cost measurement, the tables (paper)
 src/labkit/       the experiment machinery: Hub repos as a cache, result caches, search spaces, 5x2 splits, the
                   paired test, tables
-docs/             the documentation site
+docs/             the project page: one static index.html and its assets
+notes/            the long-form notes behind it: method, results, reproduction, data, notebooks, package
 ```
 
 The data — the audio at 16 kHz, every expert's transcripts and word-error counters, their frame-level encoder
 states, and the stored searches, folds and records — is the Hugging Face dataset
 [`huseyin-karaca/hit-asr`](https://huggingface.co/datasets/huseyin-karaca/hit-asr). Each corpus's part carries that
-corpus's licence; see the [documentation](https://hkaraca.com/hit-asr/data/).
+corpus's licence; see [`notes/data.md`](notes/data.md).
 
 ## Citation
 
